@@ -10,7 +10,8 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   dialect: process.env.DB_DIALECT,
   port: process.env.DB_PORT
 });
-const User = sequelize.define('User',{
+
+const User = sequelize.define('User', {
   idx: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
