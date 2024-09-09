@@ -46,5 +46,9 @@ const User = sequelize.define('User', {
   region: {
     type: DataTypes.TEXT,
     allowNull : false
+  },
+  token: {
+    type: DataTypes.STRING,
+    allowNull: false
   }
 })
