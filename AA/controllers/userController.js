@@ -75,3 +75,27 @@ const login = async(req, res) => {
         return res.status(400).json({ message: "요청에 실패했습니다." });
     }
 }
+
+const getUser = async (req, res) => {
+    const { userid } = req.decoded;
+
+    try {
+        const thisUser = await User.findOne({ where: { userid } });
+
+        if(!thisUser) {
+            return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+        }
+
+        return res.status(200).json({
+            userid: thisUser.userid,
+            nickname: thisUser.nickname,
+            pet_name: thisUser.pet_name,
+            species: thisUser.species,
+            pet_birth: thisUser.pet_birth,
+            region: thisUser.region,
+        })
+    } catch (err) {
+        console.error(err);
+        return res.status(400).json({ message: "요청에 실패했습니다." });
+    }
+};
