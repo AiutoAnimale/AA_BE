@@ -75,3 +75,22 @@ const login = async(req, res) => {
         return res.status(400).json({ message: "요청에 실패했습니다." });
     }
 }
+
+const logout = async(req, res) => {
+    const { userid } = req.decoded;
+    
+    try {
+        if(!userid) {
+            return res.status(404).json({ message: "로그인이 필요합니다." });
+        }
+
+        const thisUser = await User.findOne({ where: { userid } });
+
+        await thisUser.update({ token: null });
+
+        return res.status(204).json({ message: "서버에서 정상적인 변경 또는 삭제 처리가 이루어졌지만, 새롭게 보일 정보가 없습니다." });
+    } catch (err) {
+        console.error(err);
+        return res.status(400).json({ message: "요청에 실패했습니다." });
+    }
+};
