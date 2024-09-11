@@ -32,7 +32,7 @@ const WriteFeed = async (req, res) => {
     console.error(err);
     return res.status(400).json({ message: "게시글 등록에 실패하였습니다." });
   }
-}
+};
 const EditFeed = async (req, res) => {
   const { title, body, tag, emergency } = req.body;
   const { token } = req.headers;
@@ -71,7 +71,7 @@ const EditFeed = async (req, res) => {
   }
 };
 
-const DelFeed = async (req, res) => {
+const DeleteFeed = async (req, res) => {
   const { token } = req.headers;
 
   try {
@@ -97,5 +97,22 @@ const DelFeed = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(400).json({ message: "게시글 삭제에 실패하였습니다." });
+  }
+};
+
+const ViewFeedDetails = async (req, res) => {
+  try {
+    const feedId = req.params.id;
+    const feed = await Feed.findOne({ where: { id: feedId } });
+
+    if (!feed) {
+      return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+    }
+
+    return res.status(200).json(feed);
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "게시글 조회에 실패하였습니다." });
   }
 };
