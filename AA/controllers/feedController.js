@@ -116,3 +116,24 @@ const ViewFeedDetails = async (req, res) => {
     return res.status(500).json({ message: "게시글 조회에 실패하였습니다." });
   }
 };
+
+const searchFeed = async (req, res) => {
+  const { result } = req.body;
+
+  try {
+    const data = await Feed.findAll({
+      where: { result },
+      attributes: { exclude: ["nickname", "title", "body", "tag", "emergency"] }, // 오타 수정
+    });
+
+    if (data.length === 0) {
+      return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+    }
+
+    return res.status(200).json(data);
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "게시글 검색에 실패했습니다." });
+  }
+};
