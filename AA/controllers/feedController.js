@@ -99,4 +99,3 @@ const DelFeed = async (req, res) => {
     return res.status(400).json({ message: "게시글 삭제에 실패하였습니다." });
   }
 };
-
