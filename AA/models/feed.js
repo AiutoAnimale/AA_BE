@@ -41,9 +41,51 @@ const Post = sequelize.define('Feed',{
   emergency:{ 
     type: DataTypes.TINYINT,
     allowNull: false
+  },
+  create_at:{
+    type: DataTypes.DATETIME,
+    allowNull: false
   }
 })
 app.post('/feed',async(req,res)=>{
   const {user} = req.query;
 })
 app.use(express.urlencoded({extended:true,})) 
+
+/route/feeds
+const express = require('express');
+const { Feed } = require('../models');
+
+const router = express.Router();
+
+const feed = async (req, res, next) => {
+  try {
+    co
+  } catch (error) {
+    
+  }
+  
+} 
+
+router.route('/feed', async(req,res,next)=>{
+  const{title,body,tag,emergency} = req.body;
+
+  try{
+    const feed = await Feed.create({
+      title: title,
+      body: body,
+      tag:tag,
+      emergency:emergency
+    });
+    return res.status(201).json({
+      message: "입력 성공",
+    });
+  }catch(err){
+    console.log(err);
+
+    return res.status(500).json({
+      message:"서버 에러",
+    });
+    
+  }
+})

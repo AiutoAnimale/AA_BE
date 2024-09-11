@@ -1,4 +1,3 @@
-//controllers/userController.js
 const bcrypt = require("bcrypt");
 const { Feed } = require('../models');
 const jwt = require("jsonwebtoken");
