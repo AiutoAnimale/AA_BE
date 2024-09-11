@@ -47,4 +47,3 @@ const Post = sequelize.define('Feed',{
     allowNull: false
   }
 })
-
