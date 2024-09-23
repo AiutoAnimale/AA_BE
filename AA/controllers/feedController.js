@@ -166,3 +166,26 @@ const viewMyFeeds = async (req, res) => {
     return res.status(500).json({ message: "게시글 검색에 실패했습니다." });
   }
 };
+
+const viewAllList = async (req, res) => {
+  const { authorization: token } = req.headers; 
+  try {
+    const findUser = await User.findOne({
+      where: { token }
+    });
+
+    if (!findUser) {
+      return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
+    }
+
+    const data = await Feed.findAll({
+      attributes: { exclude: ["title", "body", "tag", "emergency", "create_at"] }
+    });
+
+    return res.status(200).json(data);
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "게시글 검색에 실패했습니다." });
+  }
+};
