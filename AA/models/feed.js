@@ -11,7 +11,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   port: process.env.DB_PORT
 });
 
-const Post = sequelize.define('Feed',{
+const Feed = sequelize.define('Feed',{
   idx: {
     type : DataTypes.INTEGER,
     autoIncrement: true,

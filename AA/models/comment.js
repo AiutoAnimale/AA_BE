@@ -11,46 +11,36 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   port: process.env.DB_PORT
 });
 
-const User = sequelize.define('User', {
+const Comment = sequelize.define('Comment',{
   idx: {
-    type: DataTypes.INTEGER,
+    type : DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
     allowNull: false
   },
-  userid: {
-    type: DataTypes.TEXT,
-    unique: true,  
+  feedid: {
+    type : DataTypes.INTEGER,
     allowNull: false
   },
-  userpw: {
-    type: DataTypes.TEXT,
-    allowNull: false,
+  userid: {
+    type : DataTypes.TEXT,
+    allowNull: false
   },
   nickname: {
     type: DataTypes.TEXT,
-    unique: true,
     allowNull: false
   },
-  pet_name: {
+  title: {
     type: DataTypes.TEXT,
     allowNull: false
   },
-  species: {
+  body: {
     type: DataTypes.TEXT,
     allowNull: false
   },
-  pet_birth: {
-    type: DataTypes.DATE,
+  create_at:{
+    type: DataTypes.DATETIME,
     allowNull: false
-  },
-  region: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  token: {
-    type: DataTypes.STRING,
-    allowNull: true 
   }
-});
+})
 
