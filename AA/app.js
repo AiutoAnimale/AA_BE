@@ -7,5 +7,6 @@ const {sequelize} = require('./models');
 const indexRouter = require('./routes');
 const usersRouter = require('./routes/users');
 const feedsRouter = require('./routes/feeds');
+const CommentsRouter = require('./routes/comments');
 
 const app = express();
