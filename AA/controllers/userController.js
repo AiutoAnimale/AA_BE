@@ -160,4 +160,4 @@ module.exports = {
     logout,
     getUser,
     updateUser,
-  };
+};
