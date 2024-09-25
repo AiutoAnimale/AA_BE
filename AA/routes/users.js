@@ -1,4 +1,8 @@
+// routes/users.js
 const express = require('express');
-const { User } = require('../models');
+const { getUser } = require('../controllers/userController'); 
 
 const router = express.Router();
+
+router.get('/info', getUser); 
+module.exports = router;

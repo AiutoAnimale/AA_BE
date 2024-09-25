@@ -189,3 +189,13 @@ const viewAllList = async (req, res) => {
     return res.status(500).json({ message: "게시글 검색에 실패했습니다." });
   }
 };
+
+module.exports = {
+  WriteFeed,
+  EditFeed,
+  DeleteFeed,
+  ViewFeedDetails,
+  searchFeed,
+  viewMyFeeds,
+  viewAllList
+};
