@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const { User } = require('../models');
 const jwt = require("jsonwebtoken");
-const dotenv = require('dotenv');
+require("dotenv").config();
 
 
 const signup = async (req, res) => {
@@ -128,9 +128,26 @@ const getUser = async (req, res) => {
     }
 };
 
-module.exports = {
-    signup,
-    login,
-    logout,
-    getUser,
-};
+const updateUser = async (req, res) => {
+    const userid = req.decoded.id;
+    const newName = req.body.nickname;
+
+    try {
+        const thisUser = await User.findOne({
+            where: { userid },
+        })
+
+        if (!thisUser) {
+            return res.status(404).json({ message : "존재하지 않는 계정입니다." })
+        }
+
+        await thisUser.update({
+            nickname : newName,
+        })
+
+        return res.status(200).json({ message: "업데이트에 성공했습니다." });
+    } catch (err) {
+        console.error(err)
+        return res.status(400).json({ message : "요청에 실패했습니다." })
+    }
+}
