@@ -27,6 +27,10 @@ const User = (sequelize) => {
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    pet_sex: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
     species: {
       type: DataTypes.TEXT,
       allowNull: false,

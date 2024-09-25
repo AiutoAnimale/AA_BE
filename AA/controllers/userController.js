@@ -5,7 +5,7 @@ require("dotenv").config();
 
 
 const signup = async (req, res) => {
-    const { userid, userpw, nickname, pet_name, species, pet_birth, region } = req.body;
+    const { userid, userpw, nickname, pet_name, pet_sex, species, pet_birth, region } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(userpw, 10);  
@@ -23,6 +23,7 @@ const signup = async (req, res) => {
             userpw: hashedPassword,
             nickname,
             pet_name,
+            pet_sex,
             species,
             pet_birth,
             region,
@@ -117,6 +118,7 @@ const getUser = async (req, res) => {
             userid: thisUser.userid,
             nickname: thisUser.nickname,
             pet_name: thisUser.pet_name,
+            pet_sex: thisUser.pet_sex,
             species: thisUser.species,
             pet_birth: thisUser.pet_birth,
             region: thisUser.region,
