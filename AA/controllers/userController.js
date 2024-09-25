@@ -151,3 +151,11 @@ const updateUser = async (req, res) => {
         return res.status(400).json({ message : "요청에 실패했습니다." })
     }
 }
+
+module.exports = {
+    signup,
+    login,
+    logout,
+    getUser,
+    updateUser,
+  };
