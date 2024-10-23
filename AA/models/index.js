@@ -9,9 +9,22 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 });
 
 // 각 모델을 초기화
-const User = require('./user')(sequelize, DataTypes);
-const Feed = require('./feed')(sequelize, DataTypes);
-const Comment = require('./comment')(sequelize, DataTypes);
+const User = require('./user')(sequelize, DataTypes); // require 방식
+const Feed = require('./feed')(sequelize, DataTypes); // require 방식
+const Comment = require('./comment')(sequelize, DataTypes); // require 방식
+
+// 또는 함수 호출 방식 사용 가능
+// const User = UserModel(sequelize, DataTypes);
+// const Feed = FeedModel(sequelize, DataTypes);
+// const Comment = CommentModel(sequelize, DataTypes);
 
 // 내보낼 객체
-module.exports = { sequelize, User, Feed, Comment };
+const db = {
+  sequelize,
+  Sequelize,
+  User,
+  Feed,
+  Comment
+};
+
+module.exports = db;
