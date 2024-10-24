@@ -1,4 +1,5 @@
 const { DataTypes } = require('sequelize');
+require("dotenv").config();
 
 const Feed = (sequelize) => {
   return sequelize.define('Feed', {
@@ -39,4 +40,4 @@ const Feed = (sequelize) => {
   });
 };
 
-module.exports = Feed; 
+module.exports = Feed;
