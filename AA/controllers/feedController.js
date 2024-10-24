@@ -3,6 +3,8 @@ const { Feed } = require('../models');
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv');
 const { where } = require("sequelize");
+const multer = require("multer");
+const path = require('path');
 
 const WriteFeed = async (req, res) => {
   const { nickname, title, body, tag, emergency, create_at } = req.body;
@@ -190,6 +192,41 @@ const viewAllList = async (req, res) => {
   }
 };
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage }).single('image');
+
+const uploadImage = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const findUser = await User.findOne({ where: { token } });
+
+    if (!findUser) {
+      return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
+    }
+
+    upload(req, res, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: "이미지 업로드에 실패했습니다." });
+      }
+      
+      return res.status(200).json({ message: "이미지 업로드 성공", file: req.file });
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "이미지 업로드에 실패했습니다." });
+  }
+};
+
 module.exports = {
   WriteFeed,
   EditFeed,
@@ -197,5 +234,6 @@ module.exports = {
   ViewFeedDetails,
   searchFeed,
   viewMyFeeds,
-  viewAllList
+  viewAllList,
+  uploadImage
 };
