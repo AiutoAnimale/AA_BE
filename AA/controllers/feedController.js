@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { Feed } = require('../models');
+const { Feed, User } = require('../models'); // User 모델 추가
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv');
 const { where } = require("sequelize");
@@ -35,6 +35,7 @@ const WriteFeed = async (req, res) => {
     return res.status(400).json({ message: "게시글 등록에 실패하였습니다." });
   }
 };
+
 const EditFeed = async (req, res) => {
   const { title, body, tag, emergency } = req.body;
   const { token } = req.headers;
@@ -217,7 +218,7 @@ const uploadImage = async (req, res) => {
         console.error(err);
         return res.status(500).json({ message: "이미지 업로드에 실패했습니다." });
       }
-      
+
       return res.status(200).json({ message: "이미지 업로드 성공", file: req.file });
     });
 
