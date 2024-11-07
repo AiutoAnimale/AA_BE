@@ -10,3 +10,4 @@ const User = require('./user')(sequelize);
 const Feed = require('./feed')(sequelize);
 
 module.exports = { sequelize, User, Feed };
+

@@ -44,3 +44,4 @@ const Comment = sequelize.define('Comment',{
   }
 })
 
+
