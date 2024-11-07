@@ -10,6 +10,7 @@ const db_info = {
   database: process.env.DB_NAME || "AA",
 };
 
+
 module.exports = {
   init: function () {
     return mysql.createPool({

@@ -29,3 +29,4 @@ const db = {
 
 module.exports = db;
 
+module.exports = { sequelize, User, Feed };
