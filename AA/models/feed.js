@@ -35,7 +35,8 @@ const Feed = (sequelize) => {
     },
     create_at: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   });
 };
