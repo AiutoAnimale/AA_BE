@@ -41,4 +41,5 @@ const Feed = (sequelize) => {
   });
 };
 
+
 module.exports = Feed;
