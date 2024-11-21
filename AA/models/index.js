@@ -7,16 +7,18 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   port: process.env.DB_PORT,
 });
 
-const User = require('./user')(sequelize, DataTypes);
-const Feed = require('./feed')(sequelize, DataTypes);
-const Comment = require('./comment')(sequelize, DataTypes);
+// 각 모델 초기화
+const Comment = require('./comment')(sequelize);
+const Feed = require('./feed')(sequelize);
+const User = require('./user')(sequelize);
 
+// DB 객체 생성
 const db = {
   sequelize,
   Sequelize,
-  User,
-  Feed,
   Comment,
+  Feed,
+  User,
 };
 
 module.exports = db;

@@ -1,5 +1,4 @@
 const { DataTypes } = require('sequelize');
-require("dotenv").config();
 
 const Feed = (sequelize) => {
   return sequelize.define('Feed', {
@@ -7,39 +6,38 @@ const Feed = (sequelize) => {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
     },
     userid: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
     },
     nickname: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
     },
     title: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
     },
     body: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
     },
     tag: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
     },
     emergency: {
       type: DataTypes.TINYINT,
-      allowNull: false
+      allowNull: false,
     },
     create_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
-    }
+      defaultValue: DataTypes.NOW,
+    },
   });
 };
-
 
 module.exports = Feed;
