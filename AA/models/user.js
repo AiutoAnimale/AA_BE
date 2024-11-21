@@ -1,5 +1,4 @@
 const { DataTypes } = require('sequelize');
-require("dotenv").config();
 
 const User = (sequelize) => {
   return sequelize.define('User', {
@@ -50,4 +49,4 @@ const User = (sequelize) => {
   });
 };
 
-module.exports = User; 
+module.exports = User;
