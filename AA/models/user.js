@@ -22,6 +22,10 @@ const User = (sequelize) => {
       unique: true,
       allowNull: false,
     },
+    level : {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     pet_name: {
       type: DataTypes.TEXT,
       allowNull: false,
