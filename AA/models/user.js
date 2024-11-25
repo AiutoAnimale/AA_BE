@@ -31,7 +31,7 @@ const User = (sequelize) => {
       allowNull: false,
     },
     pet_sex: {
-      type: DataTypes.TEXT,
+      type: DataTypes.TINYINT,
       allowNull: false,
     },
     species: {

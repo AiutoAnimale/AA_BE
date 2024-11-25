@@ -11,9 +11,14 @@ const signup = async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(userpw, 10);  
         const existUser = await User.findOne({ where: { userid } });
+        const existUserNick = await User.findOne({ where: { nickname } });
 
         if (existUser) {
             return res.status(409).json({ message: "중복된 아이디입니다." });
+        }
+
+        if (existUserNick) {
+            return res.status(409).json({ message: "중복된 닉네임입니다." });
         }
 
         await User.create({
@@ -25,6 +30,7 @@ const signup = async (req, res) => {
             species,
             pet_birth,
             region,
+            level: '0',
         });
 
         return res.status(201).json({ message: "회원가입에 성공했습니다." });
@@ -102,6 +108,7 @@ const getUser = async (req, res) => {
             species: thisUser.species,
             pet_birth: thisUser.pet_birth,
             region: thisUser.region,
+            level: thisUser.level
         });
     } catch (err) {
         console.error(err);
