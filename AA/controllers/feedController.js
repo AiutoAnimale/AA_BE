@@ -1,3 +1,4 @@
+const { Sequelize } = require("sequelize");  // Add this line
 const bcrypt = require("bcrypt");
 const { Feed, User } = require('../models'); // User 모델 추가
 const jwt = require("jsonwebtoken");
@@ -83,30 +84,43 @@ const EditFeed = async (req, res) => {
 };
 
 const DeleteFeed = async (req, res) => {
-  const { token } = req.headers;
+  const token = req.headers.authorization?.split(" ")[1]; // Bearer 뒤의 토큰 추출
+
+  // 토큰이 없으면 401 에러 반환
+  if (!token) {
+    return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
+  }
 
   try {
+    // 사용자 확인
     const findUser = await User.findOne({
       where: { token }
     });
 
     if (!findUser) {
-      return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
+      return res.status(401).json({ message: "유효하지 않은 사용자" });
     }
 
+    // 게시글 ID 추출
     const feedId = req.params.id;
-    const feed = await Feed.findOne({ where: { id: feedId } });
+    const feed = await Feed.findOne({ where: { idx: feedId } }); // 'id'를 'idx'로 수정
 
     if (!feed) {
       return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
     }
 
-    await feed.destroy(); 
+    // 게시글 작성자와 요청자가 동일한지 확인
+    if (feed.userid !== findUser.userid) {
+      return res.status(403).json({ message: "이 게시글을 삭제할 권한이 없습니다." });
+    }
+
+    // 게시글 삭제
+    await feed.destroy();
 
     return res.status(200).json({ message: "게시글이 삭제되었습니다." });
 
   } catch (err) {
-    console.error(err);
+    console.error("삭제 중 오류 발생:", err);
     return res.status(400).json({ message: "게시글 삭제에 실패하였습니다." });
   }
 };
@@ -133,8 +147,14 @@ const searchFeed = async (req, res) => {
 
   try {
     const data = await Feed.findAll({
-      where: { result },
-      attributes: { exclude: ["nickname", "title", "body", "tag", "emergency"] }, 
+      where: {
+        [Sequelize.Op.or]: [
+          { title: { [Sequelize.Op.like]: `%${result}%` } },
+          { body: { [Sequelize.Op.like]: `%${result}%` } },
+          { tag: { [Sequelize.Op.like]: `%${result}%` } },
+        ]
+      },
+      attributes: { exclude: ["nickname", "title", "body", "tag", "emergency"] },
     });
 
     if (data.length === 0) {
@@ -197,7 +217,7 @@ const viewAllList = async (req, res) => {
 
     // 전체 피드 조회
     const data = await Feed.findAll({
-      attributes: ['idx', 'userid', 'nickname', 'emergency'], // 필요한 필드만 선택
+      attributes: ['idx', 'userid', 'nickname','title','body', 'emergency'], // 필요한 필드만 선택
     });
 
     if (data.length === 0) {
@@ -210,7 +230,6 @@ const viewAllList = async (req, res) => {
     return res.status(500).json({ message: "서버 내부 오류" });
   }
 };
-
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -226,25 +245,33 @@ const upload = multer({ storage: storage }).single('image');
 const uploadImage = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const findUser = await User.findOne({ where: { token } });
+    console.log("Authorization Header Token:", token);
 
+    const findUser = await User.findOne({ where: { token } });
     if (!findUser) {
+      console.error("유효하지 않은 사용자");
       return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
     }
 
-    console.log('image');
+    console.log("사용자 인증 성공:", findUser);
 
     upload(req, res, (err) => {
       if (err) {
-        console.error(err);
+        console.error("Multer Error:", err);
         return res.status(500).json({ message: "이미지 업로드에 실패했습니다." });
       }
 
+      if (!req.file) {
+        console.error("업로드된 파일 없음");
+        return res.status(400).json({ message: "이미지가 업로드되지 않았습니다." });
+      }
+
+      console.log("업로드된 파일:", req.file);
       return res.status(200).json({ message: "이미지 업로드 성공", file: req.file });
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("uploadImage Error:", err);
     return res.status(500).json({ message: "이미지 업로드에 실패했습니다." });
   }
 };
