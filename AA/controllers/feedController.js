@@ -7,32 +7,40 @@ const multer = require("multer");
 const path = require('path');
 
 const WriteFeed = async (req, res) => {
-  const { nickname, title, body, tag, emergency, create_at } = req.body;
-  const { token } = req.headers;
+  const { nickname, title, body, tag, emergency } = req.body;
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "유효한 토큰이 필요합니다." });
+  }
 
   try {
     const findUser = await User.findOne({
-      where: { token }
+      where: { token },
     });
 
     if (!findUser) {
       return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
     }
 
-    await Feed.create({
+    // 게시글 생성
+    const newFeed = await Feed.create({
+      userid: findUser.userid, // User의 userid 추가
       nickname,
       title,
       body,
       tag,
       emergency,
-      create_at
+      createdAt: new Date(), // createdAt 기본값 설정
     });
 
-    return res.status(201).json({ message: "게시글이 등록되었습니다." });
-
+    return res.status(201).json({
+      message: "게시글이 등록되었습니다.",
+      feedId: newFeed.idx, // Feed 모델의 기본 키(idx) 반환
+    });
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ message: "게시글 등록에 실패하였습니다." });
+    return res.status(500).json({ message: "게시글 등록에 실패하였습니다." });
   }
 };
 
@@ -63,7 +71,7 @@ const EditFeed = async (req, res) => {
       body,
       tag,
       emergency,
-      create_at: currentTime
+      createdAt: currentTime
     });
 
     return res.status(200).json({ message: "게시글이 수정되었습니다." });
@@ -155,7 +163,7 @@ const viewMyFeeds = async (req, res) => {
 
     const data = await Feed.findAll({
       where: { nickname: findUser.nickname }, 
-      attributes: { exclude: ["title", "body", "tag", "emergency", "create_at"] },
+      attributes: { exclude: ["title", "body", "tag", "emergency", "createdAt"] },
     });
 
     if (data.length === 0) {
@@ -171,27 +179,38 @@ const viewMyFeeds = async (req, res) => {
 };
 
 const viewAllList = async (req, res) => {
-  const { authorization: token } = req.headers; 
+  const { authorization } = req.headers;
+
+  // Bearer 토큰 파싱
+  const token = authorization?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
+  }
+
   try {
-    const findUser = await User.findOne({
-      where: { token }
-    });
+    // 사용자 인증 확인
+    const findUser = await User.findOne({ where: { token } });
 
     if (!findUser) {
-      return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
+      return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
     }
 
+    // 전체 피드 조회
     const data = await Feed.findAll({
-      attributes: { exclude: ["title", "body", "tag", "emergency", "create_at"] }
+      attributes: ['idx', 'userid', 'nickname', 'emergency'], // 필요한 필드만 선택
     });
 
-    return res.status(200).json(data);
+    if (data.length === 0) {
+      return res.status(404).json({ message: "게시글이 존재하지 않습니다." });
+    }
 
+    return res.status(200).json(data); // 조회된 데이터 반환
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "게시글 검색에 실패했습니다." });
+    console.error("viewAllList Error: ", err);
+    return res.status(500).json({ message: "서버 내부 오류" });
   }
 };
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -212,6 +231,8 @@ const uploadImage = async (req, res) => {
     if (!findUser) {
       return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
     }
+
+    console.log('image');
 
     upload(req, res, (err) => {
       if (err) {

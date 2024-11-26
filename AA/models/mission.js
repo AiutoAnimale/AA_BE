@@ -12,7 +12,23 @@ const Mission = (sequelize)=>{
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    answer : {
+    answer1 : {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    answer2 : {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    answer3 : {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    answer4 : {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    correct : {
       type: DataTypes.TEXT,
       allowNull: false,
     },

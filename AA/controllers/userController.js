@@ -4,6 +4,7 @@ const { User } = require('../models');
 const jwt = require("jsonwebtoken");
 const multer = require("multer"); // Multer 모듈 로드
 const path = require('path'); // Path 모듈 로드
+const cors = require('cors');
 
 const signup = async (req, res) => {
     const { userid, userpw, nickname, pet_name, pet_sex, species, pet_birth, region } = req.body;
