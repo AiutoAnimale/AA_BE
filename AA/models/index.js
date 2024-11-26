@@ -7,10 +7,13 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   port: process.env.DB_PORT,
 });
 
-// 각 모델 초기화
+// Ensure you don't declare the same model twice
 const Comment = require('./comment')(sequelize);
 const Feed = require('./feed')(sequelize);
 const User = require('./user')(sequelize);
+const Vet = require('./vet')(sequelize);  // Ensure this model is defined only once
+const Mission = require('./mission')(sequelize); // This should be declared only once
+const Act = require('./act')(sequelize);
 
 // DB 객체 생성
 const db = {
@@ -19,6 +22,9 @@ const db = {
   Comment,
   Feed,
   User,
+  Vet,
+  Mission, 
+  Act,
 };
 
 module.exports = db;

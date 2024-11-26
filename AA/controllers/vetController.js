@@ -18,6 +18,7 @@ const searchVet = async (req, res) => {
         ],
       },
       attributes: ['phone', 'location', 'roadname', 'name'],
+      tableName: 'vets', // 테이블 이름을 소문자로 명시
     });
 
     if (data.length === 0) {
