@@ -1,58 +1,59 @@
-const { User, Mission } = require('../models');
+const { Mission, User } = require('../models');
 
+// 랜덤 문제 조회 및 반환
 const mission = async (req, res) => {
-  const randomIndex = Math.floor(Math.random() * 10) + 1;
-
-  const userId = req.user.id;  // 사용자 ID
-
   try {
+    const missionCount = await Mission.count(); // 미션 총 개수 가져오기
+    const randomIndex = Math.floor(Math.random() * missionCount) + 1; // 무작위 문제 번호 생성
+    const userId = req.user.userid; // 사용자 ID (JWT에서 가져옴)
+
     // 무작위 미션 조회
     const randomMission = await Mission.findByPk(randomIndex);
     if (!randomMission) {
       return res.status(404).json({ message: "문제를 찾을 수 없습니다." });
     }
 
-    // 사용자의 정보 조회
-    const user = await User.findByPk(userId);
-    if (!user) {
-      return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+    // 문제를 클라이언트에 전달할 데이터 구성
+    const missionData = {
+      question: randomMission.question,
+      answer1: randomMission.answer1,
+      answer2: randomMission.answer2,
+      answer3: randomMission.answer3,
+      answer4: randomMission.answer4,
+      missionId: randomMission.idx // 미션 ID 추가
+    };
+
+    // 클라이언트에게 문제와 선택지를 전달
+    return res.status(200).json({ mission: missionData });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "문제를 처리하는 중 오류가 발생했습니다.", error: error.message });
+  }
+};
+
+// 답안 제출 및 정답 확인
+const checkAnswer = async (req, res) => {
+  const { missionId, answer } = req.body; // 클라이언트로부터 미션 ID와 답을 받음
+
+  try {
+    // 미션을 찾고 정답 확인
+    const mission = await Mission.findByPk(missionId);
+    if (!mission) {
+      return res.status(404).json({ message: "문제를 찾을 수 없습니다." });
     }
 
-    // 이미 미션을 풀었는지 확인
-    if (user.missionCompleted && user.missionCompleted.includes(randomIndex)) {
-      return res.status(400).json({ message: "이 문제는 이미 풀었습니다." });
-    }
-
-    // 사용자로부터 제출된 답변을 받음
-    const { selectedAnswer } = req.body;  // selectedAnswer는 사용자가 선택한 답
-
-    // 정답 비교
-    if (selectedAnswer === randomMission.correct) {
-      // 정답일 경우 사용자 레벨을 증가시킴
-      user.level += 1;
-
-      // 미션 완료 목록에 해당 미션 추가
-      user.missionCompleted = user.missionCompleted || [];
-      user.missionCompleted.push(randomIndex);
-
-      await user.save();
-
-      return res.status(200).json({
-        message: "정답입니다! 레벨이 올라갔습니다.",
-        mission: randomMission,
-        newLevel: user.level,
-      });
+    // 클라이언트의 답이 정답인지 비교
+    if (answer === mission.correct) {
+      return res.status(200).json({ message: "정답입니다!" });
     } else {
-      return res.status(200).json({
-        message: "틀렸습니다. 다시 시도해 주세요.",
-        mission: randomMission,
-      });
+      return res.status(400).json({ message: "오답입니다. 다시 시도해주세요." });
     }
 
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "문제를 처리하는 중 오류가 발생했습니다." });
+    return res.status(500).json({ message: "답을 확인하는 중 오류가 발생했습니다.", error: error.message });
   }
 };
 
-module.exports = { mission };
+module.exports = { mission, checkAnswer };

@@ -8,9 +8,13 @@ const Comment = (sequelize) => {
       primaryKey: true,
       allowNull: false,
     },
-    feedid: {
+    feed_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'feeds',  // 외래 키가 참조하는 테이블 이름
+        key: 'idx',      // 참조하는 테이블의 컬럼
+      },
     },
     userid: {
       type: DataTypes.TEXT,
@@ -24,11 +28,14 @@ const Comment = (sequelize) => {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    create_at: {
+    createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+  },
+  {
+    timestamps: false,
   });
 };
 

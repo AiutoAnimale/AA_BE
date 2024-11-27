@@ -1,22 +1,24 @@
-const {DataTypes} = require('sequelize');
+const { DataTypes } = require('sequelize');
 
-const Act = (sequelize)=>{
-  return sequelize.define('Act',{
+const Act = (sequelize) => {
+  return sequelize.define('Act', {
     idx: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
     },
-    categories : {
+    categories: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    createdAt : {
+    createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+  }, {
+    timestamps: false,  // 'updatedAt' 필드를 사용하지 않도록 설정
   });
 };
 

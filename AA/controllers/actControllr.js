@@ -11,6 +11,7 @@ const searchAct = async (req, res) => {
 
     // 카테고리에 맞는 게시물 찾기
     const acts = await Act.findAll({
+      attributes: ['idx', 'categories', 'title', 'body', 'createdAt'], // title과 body를 반환하도록 설정
       where: {
         categories: {
           [Op.eq]: category, // Op.eq를 사용하여 'categories' 필드 값이 category와 일치하는 항목을 찾음
@@ -29,5 +30,6 @@ const searchAct = async (req, res) => {
     return res.status(500).json({ message: '게시물 검색에 실패했습니다.' });
   }
 };
+
 
 module.exports = { searchAct };

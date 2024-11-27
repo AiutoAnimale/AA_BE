@@ -41,7 +41,7 @@ const Feed = (sequelize) => {
       },
     },
     {
-      timestamps: false, // 자동 createdAt, updatedAt 비활성화
+      timestamps: false,
     }
   );
 };

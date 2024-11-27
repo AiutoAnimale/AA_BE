@@ -5,12 +5,13 @@ const feed = require("../controllers/feedController");
 const token = require("../middleware/token");
 
 router.post("/WriteFeed",token, feed.WriteFeed);
-router.post("/feeds/uploadImage/:id", token, feed.uploadImage);
+router.post('/feeds/uploadImage/:id', token, feed.uploadImage);
 router.patch("/EditFeed",token,feed.EditFeed);
-router.delete("/DeleteFeed",token,feed.DeleteFeed);
+router.delete("/DeleteFeed/:id", token, feed.DeleteFeed);
 router.get("/ViewFeedDetails", token, feed.ViewFeedDetails);
-router.get("/searchFeed", token, feed.searchFeed);
+router.post("/searchFeed", token, feed.searchFeed);
 router.get("/viewMyFeeds", token, feed.viewMyFeeds);
 router.get("/viewAllList", token, feed.viewAllList);
+
 
 module.exports = router;  

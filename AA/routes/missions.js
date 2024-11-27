@@ -1,9 +1,10 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const missionController = require("../controllers/missionController");
-const token = require("../middleware/token");
+const { mission, checkAnswer } = require('../controllers/missionController');
+const authenticationMiddleware = require('../middleware/token');
 
-// 토큰 인증 미들웨어를 통해 보호된 엔드포인트 정의
-router.post("/mission", token, missionController.mission);
+// 미션 라우터
+router.get('/mission', authenticationMiddleware, mission);
+router.post('/mission/check', authenticationMiddleware, checkAnswer);
 
 module.exports = router;
