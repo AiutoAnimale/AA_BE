@@ -92,7 +92,12 @@ const logout = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-    const { userid } = req.decoded;
+    console.log(req.user); // 디버깅: user 정보 확인
+    if (!req.user || !req.user.userid) {
+        return res.status(401).json({ message: "유효하지 않은 요청입니다." });
+    }
+
+    const { userid } = req.user; // req.user로 변경
 
     try {
         const thisUser = await User.findOne({ where: { userid } });
@@ -118,7 +123,7 @@ const getUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-    const userid = req.decoded.id;
+    const { userid } = req.decoded; // req.decoded에서 userid 가져오기
     const newName = req.body.nickname;
 
     try {
@@ -137,45 +142,10 @@ const updateUser = async (req, res) => {
     }
 };
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ storage: storage }).single('image');
-
-const uploadProfile = async (req, res) => {
-    try {
-        const token = req.headers.authorization?.split(" ")[1];
-        const findUser = await User.findOne({ where: { token } });
-
-        if (!findUser) {
-            return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
-        }
-
-        upload(req, res, (err) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: "이미지 업로드에 실패했습니다." });
-            }
-
-            return res.status(200).json({ message: "이미지 업로드 성공", file: req.file });
-        });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: "이미지 업로드에 실패했습니다." });
-    }
-};
-
 module.exports = {
     signup,
     login,
     logout,
     getUser,
     updateUser,
-    uploadProfile // 충돌 해결 후 uploadProfile 추가
 };

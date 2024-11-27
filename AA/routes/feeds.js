@@ -5,7 +5,7 @@ const feed = require("../controllers/feedController");
 const token = require("../middleware/token");
 
 router.post("/WriteFeed",token, feed.WriteFeed);
-router.post("/feeds/uploadImage/:id", token, feed.uploadImage);
+router.post('/feeds/uploadImage/:id', token, feed.uploadImage);
 router.patch("/EditFeed",token,feed.EditFeed);
 router.delete("/DeleteFeed/:id", token, feed.DeleteFeed);
 router.get("/ViewFeedDetails", token, feed.ViewFeedDetails);

@@ -1,6 +1,6 @@
 const { Sequelize } = require("sequelize");  // Add this line
 const bcrypt = require("bcrypt");
-const { Feed, User } = require('../models'); // User 모델 추가
+const { Feed, User , Comment} = require('../models'); // User 모델 추가
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv');
 const { where } = require("sequelize");
@@ -84,15 +84,13 @@ const EditFeed = async (req, res) => {
 };
 
 const DeleteFeed = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Bearer 뒤의 토큰 추출
+  const token = req.headers.authorization?.split(" ")[1]; 
 
-  // 토큰이 없으면 401 에러 반환
   if (!token) {
     return res.status(401).json({ message: "로그인 후 이용이 가능합니다." });
   }
 
   try {
-    // 사용자 확인
     const findUser = await User.findOne({
       where: { token }
     });
@@ -101,20 +99,17 @@ const DeleteFeed = async (req, res) => {
       return res.status(401).json({ message: "유효하지 않은 사용자" });
     }
 
-    // 게시글 ID 추출
     const feedId = req.params.id;
-    const feed = await Feed.findOne({ where: { idx: feedId } }); // 'id'를 'idx'로 수정
+    const feed = await Feed.findOne({ where: { idx: feedId } }); 
 
     if (!feed) {
       return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
     }
 
-    // 게시글 작성자와 요청자가 동일한지 확인
     if (feed.userid !== findUser.userid) {
       return res.status(403).json({ message: "이 게시글을 삭제할 권한이 없습니다." });
     }
 
-    // 게시글 삭제
     await feed.destroy();
 
     return res.status(200).json({ message: "게시글이 삭제되었습니다." });
@@ -154,7 +149,7 @@ const searchFeed = async (req, res) => {
           { tag: { [Sequelize.Op.like]: `%${result}%` } },
         ]
       },
-      attributes: { exclude: ["nickname", "title", "body", "tag", "emergency"] },
+      attributes: [ 'idx','nickname', 'title', 'body', 'tag', 'emergency', 'createdAt'], // 원하는 필드만 포함
     });
 
     if (data.length === 0) {
@@ -168,6 +163,7 @@ const searchFeed = async (req, res) => {
     return res.status(500).json({ message: "게시글 검색에 실패했습니다." });
   }
 };
+
 
 const viewMyFeeds = async (req, res) => {
   const { token } = req.headers;
@@ -233,19 +229,24 @@ const viewAllList = async (req, res) => {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'uploads/');  // 업로드된 파일이 저장될 폴더
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+    cb(null, Date.now() + path.extname(file.originalname));  // 파일 이름을 현재 시간 + 확장자
   }
 });
 
-const upload = multer({ storage: storage }).single('image');
+const upload = multer({ storage: storage }).single('image');  // 'image' 필드
 
 const uploadImage = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    const token = req.headers.authorization?.split(" ")[1];  // Authorization 헤더에서 토큰 추출
     console.log("Authorization Header Token:", token);
+
+    if (!token) {
+      console.error("Authorization 토큰이 없음");
+      return res.status(400).json({ message: "Authorization 토큰이 필요합니다." });
+    }
 
     const findUser = await User.findOne({ where: { token } });
     if (!findUser) {
@@ -257,7 +258,7 @@ const uploadImage = async (req, res) => {
 
     upload(req, res, (err) => {
       if (err) {
-        console.error("Multer Error:", err);
+        console.error("Multer 에러:", err);
         return res.status(500).json({ message: "이미지 업로드에 실패했습니다." });
       }
 
@@ -269,9 +270,8 @@ const uploadImage = async (req, res) => {
       console.log("업로드된 파일:", req.file);
       return res.status(200).json({ message: "이미지 업로드 성공", file: req.file });
     });
-
   } catch (err) {
-    console.error("uploadImage Error:", err);
+    console.error("uploadImage 에러:", err);
     return res.status(500).json({ message: "이미지 업로드에 실패했습니다." });
   }
 };
